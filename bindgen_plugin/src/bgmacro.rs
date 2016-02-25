@@ -117,6 +117,10 @@ impl MacroArgsVisitor for BindgenArgsVisitor {
         match name {
             Some("allow_unknown_types") => self.options.fail_on_unknown_type = !val,
             Some("emit_builtins") => self.options.builtins = val,
+            Some("no_functions") => self.options.functions = !val,
+            Some("no_enums") => self.options.enums = !val,
+            Some("no_globals") => self.options.globals = !val,
+            Some("no_types") => self.options.types = !val,
             _ => return false
         }
         true

@@ -108,6 +108,22 @@ fn parse_args(args: &[String]) -> ParseResult {
                     options.override_enum_ty = args[ix + 1].clone();
                     ix += 2;
                 }
+                "-no-functions" => {
+                    options.functions = false;
+                    ix += 1;
+                }
+                "-no-enums" => {
+                    options.enums = false;
+                    ix += 1;
+                }
+                "-no-globals" => {
+                    options.globals = false;
+                    ix += 1;
+                }
+                "-no-types" => {
+                    options.types = false;
+                    ix += 1;
+                }
                 _ => {
                     options.clang_args.push(args[ix].clone());
                     ix += 1;
@@ -138,6 +154,10 @@ Options:
                                (for example __builtin_va_list)
     -allow-unknown-types       Don't fail if we encounter types we do not support,
                                instead treat them as void
+    -no-functions              Don't emit functions in bindings.
+    -no-enums                  Don't emit enums in bindings.
+    -no-globals                Don't emit globals in bindings.
+    -no-types                  Don't emit types in bindings.
     -emit-clang-ast            Output the ast (for debugging purposes)
     -override-enum-type <type> Override enum type, type name could be
                                  uchar

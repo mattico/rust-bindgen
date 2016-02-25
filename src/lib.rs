@@ -76,6 +76,26 @@ impl<'a> Builder<'a> {
         self
     }
 
+    pub fn no_functions(&mut self) -> &mut Self {
+        self.options.functions = false;
+        self
+    }
+
+    pub fn no_enums(&mut self) -> &mut Self {
+        self.options.enums = false;
+        self
+    }
+
+    pub fn no_globals(&mut self) -> &mut Self {
+        self.options.globals = false;
+        self
+    }
+
+    pub fn no_types(&mut self) -> &mut Self {
+        self.options.types = false;
+        self
+    }
+
     pub fn log(&mut self, logger: &'a Logger) -> &mut Self {
         self.logger = Some(logger);
         self
@@ -104,6 +124,10 @@ pub struct BindgenOptions {
     pub emit_ast: bool,
     pub fail_on_unknown_type: bool,
     pub override_enum_ty: String,
+    pub functions: bool,
+    pub enums: bool,
+    pub globals: bool,
+    pub types: bool,
     pub clang_args: Vec<String>,
 }
 
@@ -116,6 +140,10 @@ impl Default for BindgenOptions {
             emit_ast: false,
             fail_on_unknown_type: false,
             override_enum_ty: "".to_owned(),
+            functions: true,
+            enums: true,
+            globals: true,
+            types: true,
             clang_args: match get_include_dir() {
                 Some(path) => vec!("-idirafter".to_owned(), path),
                 None => Vec::new()
@@ -227,6 +255,10 @@ fn parse_headers(options: &BindgenOptions, logger: &Logger) -> Result<Vec<Global
         emit_ast: options.emit_ast,
         fail_on_unknown_type: options.fail_on_unknown_type,
         override_enum_ty: str_to_ikind(&options.override_enum_ty[..]),
+        functions: options.functions,
+        enums: options.enums,
+        globals: options.globals,
+        types: options.types,
         clang_args: options.clang_args.clone(),
     };
 
