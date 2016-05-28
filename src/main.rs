@@ -55,7 +55,8 @@ Options:
                                  slong
                                  ulonglong
                                  slonglong
-  --clang-options=<opts>      Options to clang.
+  --clang-options=<opts>       Options to clang.
+  --link-prefix=<prefix>       Add an attribute to link to prefixed symbols
 ";
 
 #[derive(Debug, RustcDecodable)]
@@ -68,6 +69,7 @@ struct Args {
     flag_emit_clang_ast: bool,
     flag_override_enum_type: String,
     flag_clang_options: String,
+    flag_link_prefix: String,
 }
 
 fn args_to_opts(args: Args, builder: &mut Builder) {

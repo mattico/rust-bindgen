@@ -108,6 +108,12 @@ impl<'a> Builder<'a> {
     pub fn generate(&self) -> Result<Bindings, ()> {
         Bindings::generate(&self.options, self.logger, None)
     }
+    
+    /// Set the link prefix
+    pub fn link_prefix<T: Into<String>>(&mut self, value: T) -> &mut Self {
+        self.options.link_prefix = value.into();
+        self
+    }
 }
 
 impl<'a> Default for Builder<'a> {
@@ -132,6 +138,7 @@ pub struct BindgenOptions {
     pub override_enum_ty: String,
     pub clang_args: Vec<String>,
     pub derive_debug: bool,
+    pub link_prefix: String,
 }
 
 impl Default for BindgenOptions {
@@ -152,6 +159,7 @@ impl Default for BindgenOptions {
             override_enum_ty: "".to_owned(),
             clang_args: args,
             derive_debug: true,
+            link_prefix: "".to_owned(),
         }
     }
 }

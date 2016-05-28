@@ -320,11 +320,11 @@ pub fn gen_mod(options: &BindgenOptions,
     let funcs = extract_functions(&mut ctx, &fs);
 
     if !Vec::is_empty(&vars) {
-        defs.push(mk_extern(&mut ctx, &options.links, vars, abi::Abi::C));
+        defs.push(mk_extern(&mut ctx, &options.link_prefix, &options.links, vars, abi::Abi::C));
     }
 
     for (abi, funcs) in funcs.into_iter() {
-        defs.push(mk_extern(&mut ctx, &options.links, funcs, abi));
+        defs.push(mk_extern(&mut ctx, &options.link_prefix, &options.links, funcs, abi));
     }
 
     // let attrs = vec!(mk_attr_list(&mut ctx, "allow", ));
@@ -339,14 +339,15 @@ pub fn gen_mod(options: &BindgenOptions,
 }
 
 fn mk_extern(ctx: &mut GenCtx,
+             prefix: &String,
              links: &[(String, LinkType)],
              foreign_items: Vec<ast::ForeignItem>,
              abi: abi::Abi)
              -> P<ast::Item> {
-    let attrs = if links.is_empty() {
+    let attrs = if links.is_empty() && prefix.is_empty() {
         Vec::new()
     } else {
-        links.iter()
+        let mut attrs: Vec<::syntax::codemap::Spanned<::syntax::ast::Attribute_>> = links.iter()
              .map(|&(ref l, ref k)| {
                  let k = match *k {
                      LinkType::Static => Some("static"),
@@ -382,7 +383,26 @@ fn mk_extern(ctx: &mut GenCtx,
                             is_sugared_doc: false,
                         })
              })
-             .collect()
+             .collect();
+             
+         if !prefix.is_empty() {
+             let link_prefix = respan(ctx.span, ast::LitKind::Str(
+                 ctx.ext_cx.name_of(prefix).as_str(),
+                 ast::StrStyle::Cooked,
+             ));
+             
+             attrs.push(respan(ctx.span,
+                               ast::Attribute_ {
+                                   id: mk_attr_id(),
+                                   style: ast::AttrStyle::Outer,
+                                   value: P(respan(ctx.span,
+                                                   ast::MetaItemKind::NameValue(InternedString::new("link_name"), 
+                                                                                link_prefix))),
+                                   is_sugared_doc: false,
+             }));
+         }
+         
+         attrs
     };
 
     let mut items = Vec::new();
